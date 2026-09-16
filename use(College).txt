@@ -1,0 +1,77 @@
+use("College")
+db.createCollection("students")
+
+db.students.insertMany([
+    {
+        name: "Tanuj",
+        age: 21,
+        course: "B.Tech",
+        city: "Jaipur"
+    },
+    {
+        name: "Rahul",
+        age: 22,
+        course: "BCA",
+        city: "Delhi"
+    },
+    {
+        name: "Priya",
+        age: 20,
+        course: "B.Tech",
+        city: "Mumbai"
+    }
+])
+
+db.students.find().pretty()
+
+
+
+
+
+
+
+
+
+
+
+use ecommerce
+
+db.createCollection("products")
+
+db.products.insertMany([
+  {
+    productName: "iPhone 15",
+    price: 69999,
+    date: "2026-09-14",
+    stock: 25,
+    category: "Mobile",
+    brand: "Apple",
+    rating: 4.7
+  },
+  {
+    productName: "HP Laptop",
+    price: 58999,
+    date: "2026-09-14",
+    stock: 15,
+    category: "Laptop",
+    brand: "HP",
+    rating: 4.5
+  },
+  {
+    productName: "Sony Headphones",
+    price: 29999,
+    date: "2026-09-14",
+    stock: 30,
+    category: "Headphones",
+    brand: "Sony",
+    rating: 4.6
+  }
+])
+
+db.products.find()
+
+
+
+
+
+
