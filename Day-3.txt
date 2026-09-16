@@ -1,0 +1,633 @@
+use collegeDB
+
+db.shopOrders.drop()
+
+const itemTypes = [
+    "Laptop Bag", "Notebook", "Pen Drive", "Headphones",
+    "Calculator", "Mouse", "Keyboard", "Study Table",
+    "Backpack", "USB Cable"
+]
+
+const departments = [
+    "CSE", "AI", "ECE", "EEE", "ME", "Civil"
+]
+
+const brands = [
+    "Dell", "HP", "Lenovo", "Boat",
+    "Logitech", "Casio", "Zebronics", "Portronics"
+]
+
+const cities = [
+    "Jaipur", "Delhi", "Mumbai", "Pune",
+    "Kota", "Udaipur", "Ajmer", "Jodhpur"
+]
+
+const payment = [
+    "UPI", "Debit Card", "Credit Card", "Cash"
+]
+
+const status = [
+    "Delivered", "Processing", "Shipped",
+    "Cancelled", "Returned"
+]
+
+const sellers = [
+    "StudentZone", "CollegeMart", "EduStore",
+    "TechWorld", "CampusShop"
+]
+
+const colours = [
+    "Black", "White", "Blue", "Grey", "Silver"
+]
+
+const tags = [
+    "student", "education", "electronics",
+    "discount", "trending", "essential"
+]
+
+let data = []
+
+for (let i = 1; i <= 3000; i++) {
+
+    const item = itemTypes[Math.floor(Math.random() * itemTypes.length)]
+    const department = departments[Math.floor(Math.random() * departments.length)]
+    const brand = brands[Math.floor(Math.random() * brands.length)]
+    const city = cities[Math.floor(Math.random() * cities.length)]
+
+    const paymentMode =
+        payment[Math.floor(Math.random() * payment.length)]
+
+    const orderStatus =
+        status[Math.floor(Math.random() * status.length)]
+
+    const seller =
+        sellers[Math.floor(Math.random() * sellers.length)]
+
+    const quantity = Math.floor(Math.random() * 5) + 1
+    const price = Math.floor(Math.random() * 9000) + 500
+    const discount = Math.floor(Math.random() * 26)
+
+    const finalPrice = Math.round(
+        price - (price * discount / 100)
+    )
+
+    const rating = Number(
+        (Math.random() * 4 + 1).toFixed(1)
+    )
+
+    const stock = Math.floor(Math.random() * 200)
+
+    const orderDate = new Date(
+        2026,
+        Math.floor(Math.random() * 12),
+        Math.floor(Math.random() * 28) + 1
+    )
+
+    const itemTags = [
+        tags[Math.floor(Math.random() * tags.length)],
+        tags[Math.floor(Math.random() * tags.length)]
+    ]
+
+    const order = {
+        orderId: "ORD" + String(i).padStart(4, "0"),
+        itemName: item + " " + i,
+        itemType: item,
+        department: department,
+        brand: brand,
+        price: price,
+        discount: discount,
+        finalPrice: finalPrice,
+        quantity: quantity,
+        amount: finalPrice * quantity,
+        rating: rating,
+        stock: stock,
+        available: stock > 0,
+
+        seller: {
+            name: seller,
+            rating: Number(
+                (Math.random() * 4 + 1).toFixed(1)
+            )
+        },
+
+        customer: {
+            name: "Student" + (Math.floor(Math.random() * 800) + 1),
+            city: city,
+            age: Math.floor(Math.random() * 8) + 18
+        },
+
+        payment: {
+            mode: paymentMode,
+            transactionId:
+                "TXN" + Math.random().toString(36).substring(2, 10)
+        },
+
+        orderStatus: orderStatus,
+        orderDate: orderDate,
+        tags: itemTags,
+
+        details: {
+            colour:
+                colours[Math.floor(Math.random() * colours.length)],
+            warranty:
+                (Math.floor(Math.random() * 3) + 1) + " year",
+            weight:
+                Number((Math.random() * 4 + 0.5).toFixed(2))
+        },
+
+        featured: Math.random() > 0.70,
+        createdAt: new Date()
+    }
+
+    data.push(order)
+
+    if (data.length === 500) {
+        db.shopOrders.insertMany(data)
+        data = []
+    }
+}
+
+if (data.length > 0) {
+    db.shopOrders.insertMany(data)
+}
+
+print("3000 records inserted successfully")
+
+db.shopOrders.aggregate([
+    {
+        $match: {
+            itemType: "Laptop Bag"
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $match: {
+            price: {
+                $gt: 3000
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $project: {
+            _id: 0,
+            itemName: 1,
+            price: 1,
+            quantity: 1
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $project: {
+            itemName: 1,
+            totalAmount: {
+                $multiply: [
+                    "$finalPrice",
+                    "$quantity"
+                ]
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$department",
+            totalOrders: {
+                $sum: 1
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$itemType",
+            totalQuantity: {
+                $sum: "$quantity"
+            },
+            averagePrice: {
+                $avg: "$price"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $sort: {
+            price: -1
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $sort: {
+            price: 1
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $sort: {
+            price: -1
+        }
+    },
+    {
+        $limit: 5
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $skip: 10
+    },
+    {
+        $limit: 5
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $unwind: "$tags"
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $count: "numberOfOrders"
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $addFields: {
+            totalAmount: {
+                $multiply: [
+                    "$finalPrice",
+                    "$quantity"
+                ]
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $set: {
+            stockValue: {
+                $multiply: [
+                    "$price",
+                    "$stock"
+                ]
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $unset: [
+            "details.weight"
+        ]
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $replaceWith: {
+            orderId: "$orderId",
+            itemName: "$itemName",
+            amount: "$amount"
+        }
+    }
+])
+
+db.students.insertMany([
+    {
+        studentId: "ST201",
+        studentName: "Rahul",
+        department: "CSE"
+    },
+    {
+        studentId: "ST202",
+        studentName: "Neha",
+        department: "AI"
+    },
+    {
+        studentId: "ST203",
+        studentName: "Vikas",
+        department: "ECE"
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $lookup: {
+            from: "students",
+            localField: "department",
+            foreignField: "department",
+            as: "studentDetails"
+        }
+    }
+])
+
+db.employees.aggregate([
+    {
+        $graphLookup: {
+            from: "employees",
+            startWith: "$employeeId",
+            connectFromField: "employeeId",
+            connectToField: "managerId",
+            as: "employeesUnder"
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $sample: {
+            size: 5
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $bucket: {
+            groupBy: "$price",
+            boundaries: [
+                0, 1000, 2500, 5000, 7500, 10000
+            ],
+            default: "10000+",
+            output: {
+                total: {
+                    $sum: 1
+                }
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $bucketAuto: {
+            groupBy: "$price",
+            buckets: 5
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$department",
+            totalAmount: {
+                $sum: "$amount"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$brand",
+            averageRating: {
+                $avg: "$rating"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$itemType",
+            minimumPrice: {
+                $min: "$price"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$itemType",
+            maximumPrice: {
+                $max: "$price"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $sort: {
+            price: 1
+        }
+    },
+    {
+        $group: {
+            _id: "$itemType",
+            firstItem: {
+                $first: "$itemName"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $sort: {
+            price: 1
+        }
+    },
+    {
+        $group: {
+            _id: "$itemType",
+            lastItem: {
+                $last: "$itemName"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$department",
+            itemList: {
+                $push: "$itemName"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$department",
+            brands: {
+                $addToSet: "$brand"
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $project: {
+            itemName: 1,
+            tags: {
+                $filter: {
+                    input: "$tags",
+                    as: "t",
+                    cond: {
+                        $eq: ["$$t", "discount"]
+                    }
+                }
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $project: {
+            tags: {
+                $map: {
+                    input: "$tags",
+                    as: "t",
+                    in: {
+                        $toUpper: "$$t"
+                    }
+                }
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $project: {
+            tagsText: {
+                $reduce: {
+                    input: "$tags",
+                    initialValue: "",
+                    in: {
+                        $concat: [
+                            "$$value",
+                            "$$this"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $match: {
+            department: "CSE",
+            price: {
+                $gt: 3000
+            }
+        }
+    },
+    {
+        $sort: {
+            price: -1
+        }
+    },
+    {
+        $limit: 5
+    },
+    {
+        $project: {
+            _id: 0,
+            itemName: 1,
+            price: 1,
+            department: 1
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$department",
+            totalAmount: {
+                $sum: "$amount"
+            }
+        }
+    },
+    {
+        $sort: {
+            totalAmount: -1
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$itemType",
+            totalOrders: {
+                $sum: 1
+            }
+        }
+    },
+    {
+        $match: {
+            totalOrders: {
+                $gt: 250
+            }
+        }
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$department",
+            totalOrders: {
+                $sum: 1
+            }
+        }
+    },
+    {
+        $out: "departmentReport"
+    }
+])
+
+db.shopOrders.aggregate([
+    {
+        $group: {
+            _id: "$department",
+            totalAmount: {
+                $sum: "$amount"
+            }
+        }
+    },
+    {
+        $merge: {
+            into: "departmentAmount",
+            on: "_id",
+            whenMatched: "replace",
+            whenNotMatched: "insert"
+        }
+    }
+])
