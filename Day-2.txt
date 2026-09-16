@@ -1,0 +1,544 @@
+// Insert student data
+
+db.students.insertMany([
+    {
+        rollNo: 101,
+        name: "Vasanth",
+        age: 21,
+        department: "CSE",
+        marks: 85,
+        skills: ["Java", "Python", "MongoDB"],
+        address: {
+            city: "Chennai",
+            state: "Tamil Nadu"
+        },
+        scholarship: true
+    },
+
+    {
+        rollNo: 102,
+        name: "Rahul",
+        age: 22,
+        department: "ECE",
+        marks: 72,
+        skills: ["C", "Python", "Arduino"],
+        address: {
+            city: "Bangalore",
+            state: "Karnataka"
+        },
+        scholarship: false
+    },
+
+    {
+        rollNo: 103,
+        name: "Priya",
+        age: 20,
+        department: "CSE",
+        marks: 91,
+        skills: ["Java", "Python", "AI"],
+        address: {
+            city: "Chennai",
+            state: "Tamil Nadu"
+        },
+        scholarship: true
+    },
+
+    {
+        rollNo: 104,
+        name: "Arjun",
+        age: 23,
+        department: "MECH",
+        marks: 68,
+        skills: ["AutoCAD", "C", "Java"],
+        address: {
+            city: "Hyderabad",
+            state: "Telangana"
+        }
+    },
+
+    {
+        rollNo: 105,
+        name: "Sneha",
+        age: 21,
+        department: "IT",
+        marks: 88,
+        skills: ["Python", "MongoDB", "HTML"],
+        address: {
+            city: "Chennai",
+            state: "Tamil Nadu"
+        },
+        scholarship: true
+    },
+
+    {
+        rollNo: 106,
+        name: "Kiran",
+        age: 24,
+        department: "EEE",
+        marks: 65,
+        skills: ["C", "Arduino", "MATLAB"],
+        address: {
+            city: "Pune",
+            state: "Maharashtra"
+        },
+        scholarship: false
+    },
+
+    {
+        rollNo: 107,
+        name: "Anjali",
+        age: 20,
+        department: "CSE",
+        marks: 95,
+        skills: ["Java", "Python", "AI", "MongoDB"],
+        address: {
+            city: "Bangalore",
+            state: "Karnataka"
+        },
+        scholarship: true
+    },
+
+    {
+        rollNo: 108,
+        name: "Rohit",
+        age: 22,
+        department: "IT",
+        marks: 76,
+        skills: ["JavaScript", "HTML", "CSS"],
+        address: {
+            city: "Hyderabad",
+            state: "Telangana"
+        },
+        scholarship: false
+    },
+
+    {
+        rollNo: 109,
+        name: "Divya",
+        age: 21,
+        department: "CSE",
+        marks: 89,
+        skills: ["Python", "MongoDB", "Java"],
+        address: {
+            city: "Chennai",
+            state: "Tamil Nadu"
+        },
+        scholarship: true
+    },
+
+    {
+        rollNo: 110,
+        name: "Suresh",
+        age: 23,
+        department: "CIVIL",
+        marks: 70,
+        skills: ["AutoCAD", "C", "STAAD"],
+        address: {
+            city: "Vijayawada",
+            state: "Andhra Pradesh"
+        },
+        scholarship: false
+    },
+
+    {
+        rollNo: 111,
+        name: "Meena",
+        age: 22,
+        department: "ECE",
+        marks: 82,
+        skills: ["Python", "Arduino", "IoT"],
+        address: {
+            city: "Bangalore",
+            state: "Karnataka"
+        },
+        scholarship: true
+    },
+
+    {
+        rollNo: 112,
+        name: "Akash",
+        age: 25,
+        department: "CSE",
+        marks: 60,
+        skills: ["C", "Java"],
+        address: {
+            city: "Hyderabad",
+            state: "Telangana"
+        },
+        scholarship: false
+    }
+])
+
+
+// Logical operators
+
+// $and
+db.students.find({
+    $and: [
+        { department: "CSE" },
+        { marks: { $gt: 85 } }
+    ]
+})
+
+// $or
+db.students.find({
+    $or: [
+        { department: "CSE" },
+        { department: "IT" }
+    ]
+})
+
+// $not
+db.students.find({
+    marks: {
+        $not: {
+            $gt: 80
+        }
+    }
+})
+
+// $nor
+db.students.find({
+    $nor: [
+        { department: "CSE" },
+        { department: "IT" }
+    ]
+})
+
+
+// Comparison operators
+
+// $eq
+db.students.find({
+    department: {
+        $eq: "CSE"
+    }
+})
+
+// $gt
+db.students.find({
+    marks: {
+        $gt: 80
+    }
+})
+
+// $lt
+db.students.find({
+    marks: {
+        $lt: 70
+    }
+})
+
+// $gte
+db.students.find({
+    marks: {
+        $gte: 85
+    }
+})
+
+// $lte
+db.students.find({
+    marks: {
+        $lte: 70
+    }
+})
+
+// $ne
+db.students.find({
+    department: {
+        $ne: "CSE"
+    }
+})
+
+
+// Array operators
+
+// $in
+db.students.find({
+    department: {
+        $in: ["CSE", "IT"]
+    }
+})
+
+// $nin
+db.students.find({
+    department: {
+        $nin: ["CSE", "IT"]
+    }
+})
+
+// $all
+db.students.find({
+    skills: {
+        $all: ["Python", "MongoDB"]
+    }
+})
+
+
+// $elemMatch
+
+// Add subjects
+db.students.updateOne(
+    { rollNo: 101 },
+    {
+        $set: {
+            subjects: [
+                { name: "Java", marks: 90 },
+                { name: "MongoDB", marks: 88 },
+                { name: "Python", marks: 95 }
+            ]
+        }
+    }
+)
+
+// Find MongoDB with marks > 85
+db.students.find({
+    subjects: {
+        $elemMatch: {
+            name: "MongoDB",
+            marks: { $gt: 85 }
+        }
+    }
+})
+
+// $size
+db.students.find({
+    skills: {
+        $size: 3
+    }
+})
+
+
+// Projection
+
+// Using $project
+db.students.aggregate([
+    {
+        $project: {
+            _id: 0,
+            name: 1,
+            department: 1,
+            marks: 1
+        }
+    }
+])
+
+// Display name and marks
+db.students.find(
+    {},
+    {
+        _id: 0,
+        name: 1,
+        marks: 1
+    }
+)
+
+// Exclude address
+db.students.find(
+    {},
+    {
+        address: 0
+    }
+)
+
+
+// $slice
+
+// First two skills
+db.students.find(
+    {},
+    {
+        name: 1,
+        skills: {
+            $slice: 2
+        }
+    }
+)
+
+
+// Element operators
+
+// $exists true
+db.students.find({
+    scholarship: {
+        $exists: true
+    }
+})
+
+// $exists false
+db.students.find({
+    scholarship: {
+        $exists: false
+    }
+})
+
+// $type
+db.students.find({
+    marks: {
+        $type: "int"
+    }
+})
+
+
+// $regex
+
+// Names starting with A
+db.students.find({
+    name: {
+        $regex: "^A"
+    }
+})
+
+
+// Update operations
+
+// $set
+db.products.updateOne(
+    { productId: 1 },
+    {
+        $set: {
+            price: 10000
+        }
+    }
+)
+
+// Update price and stock
+db.products.updateOne(
+    { productId: 2 },
+    {
+        $set: {
+            price: 15000,
+            stock: 100
+        }
+    }
+)
+
+// Update seller name
+db.products.updateOne(
+    { productId: 3 },
+    {
+        $set: {
+            "seller.sellerName": "Premium Seller"
+        }
+    }
+)
+
+// $push
+db.products.updateOne(
+    { productId: 4 },
+    {
+        $push: {
+            tags: "sale"
+        }
+    }
+)
+
+// $addToSet
+db.products.updateOne(
+    { productId: 5 },
+    {
+        $addToSet: {
+            tags: "electronics"
+        }
+    }
+)
+
+// $inc
+db.products.updateOne(
+    { productId: 6 },
+    {
+        $inc: {
+            stock: 20
+        }
+    }
+)
+
+// Decrease stock
+db.products.updateOne(
+    { productId: 6 },
+    {
+        $inc: {
+            stock: -5
+        }
+    }
+)
+
+// $unset
+db.products.updateOne(
+    { productId: 1 },
+    {
+        $unset: {
+            rating: ""
+        }
+    }
+)
+
+
+// updateMany
+
+// Laptop products
+db.products.updateMany(
+    { category: "Laptop" },
+    {
+        $set: {
+            inStock: true
+        }
+    }
+)
+
+// Samsung products
+db.products.updateMany(
+    { brand: "Samsung" },
+    {
+        $inc: {
+            price: 1000
+        }
+    }
+)
+
+
+// Multiple operators
+
+db.products.updateOne(
+    { productId: 10 },
+    {
+        $set: {
+            price: 25000,
+            inStock: true
+        },
+
+        $inc: {
+            stock: 10
+        },
+
+        $push: {
+            tags: "sale"
+        }
+    }
+)
+
+
+// Delete operations
+
+// deleteOne
+db.products.deleteOne({
+    productId: 10
+})
+
+// deleteMany
+db.products.deleteMany({
+    category: "Laptop"
+})
+
+// Price greater than 30000
+db.products.deleteMany({
+    price: {
+        $gt: 30000
+    }
+})
+
+// Delete all documents
+db.products.deleteMany({})
+
+// Delete collection
+db.products.drop()
